@@ -1,0 +1,78 @@
+#include "axi4_lite_slave.h"
+
+module axi4_lite_slave
+{
+    // for read
+    proc_name read_address, read_data;
+
+    reg r_address[AXI_ADDR_WIDTH];
+    reg r_prot[3];
+
+    // for write
+    proc_name write_address, write_data, send_response;
+    reg aw_addr[AXI_ADDR_WIDTH], aw_prot[3], w_data[AXI_DATA_WIDTH], w_strb[4];
+
+    // 'axi4 lite read' access from master
+    if(arvalid)
+    {
+        read_address();
+    }
+
+    proc read_address
+    {
+        r_address := araddr;
+        r_prot := arprot;
+        arready();
+        read_data();
+    }
+
+    proc read_data
+    {
+        rdata = 0x12345678;
+        rresp = 0b00;
+        rvalid();
+        if(rready)
+        {
+            finish();
+        }
+    }
+
+    // write access from master
+    if(awvalid)
+    {
+        write_address();
+    }
+
+    proc write_address
+    {
+        //TODO
+        aw_addr := awaddr;
+        aw_prot := awprot;
+        awready();
+        write_data();
+    }
+
+    proc write_data
+    {
+        // TODO
+        w_data := wdata;
+        w_strb := wstrb;
+        // read data
+        // read strb
+        wready();
+        if(wvalid)
+        {
+            send_response();
+        }
+    }
+
+    proc send_response
+    {
+        bvalid();
+        bresp = 0b00;
+        if(bready)
+        {
+            finish();
+        }
+    }
+}

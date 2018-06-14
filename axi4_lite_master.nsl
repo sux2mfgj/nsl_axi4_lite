@@ -1,0 +1,114 @@
+#include "axi4_lite_master.h"
+
+module axi4_lite_master
+{
+    // difinition for read
+    reg r_address[AXI_ADDR_WIDTH];
+    reg r_data[AXI_DATA_WIDTH];
+    proc_name r_address_write(r_address), r_data_read();
+
+    // definition for write
+    reg w_address[AXI_ADDR_WIDTH];
+    reg w_data[AXI_DATA_WIDTH];
+    proc_name w_address_write(w_address), w_write_data(w_data), w_get_response();
+
+    /*
+     * read value from axi4 lite slave.
+     */
+    func read_value
+    {
+        r_address_write(address);
+    }
+
+    proc r_address_write
+    {
+        araddr = r_address;
+        arprot = 0b000;
+        /* arvalid = 0b1; */
+        arvalid();
+
+        //TODO consider timeout
+        if(arready)
+        {
+            r_data_read();
+        }
+    }
+    proc r_data_read
+    {
+        //TODO consider timeout
+        if(rvalid)
+        {
+            if(rresp[1] == 0)
+            {
+                /* rready = 0b1; */
+                rready();
+                data_arrive(rdata);
+                finish();
+            }
+            else {
+                //TODO
+                // assert, output error and so on.
+                finish();
+                read_error();
+            }
+        }
+    }
+
+    /*
+     * write value to axi4 lite slave module.
+     */
+    func write_value
+    {
+        w_address_write(address);
+        w_write_data(write_data);
+        w_get_response();
+    }
+
+    proc w_address_write
+    {
+        awaddr = w_address;
+        awprot = 0b000;
+        /* awvalid = 0b1; */
+        awvalid();
+
+        if(awready)
+        {
+            finish();
+        }
+    }
+
+    proc w_write_data
+    {
+        wdata = w_data;
+        wstrb = 0b1111;
+        /* wvalid = 0b1; */
+        wvalid();
+        if(wready)
+        {
+            finish();
+        }
+    }
+
+    proc w_get_response
+    {
+        //bready = 0b1;
+        bready();
+        if(bvalid)
+        {
+            //TODO consider timeout
+            if(bresp[1])
+            {
+                // some error occured
+                w_address_write.finish();
+                w_write_data.finish();
+                finish();
+                write_error();
+            }
+            else
+            {
+                finish();
+                write_done();
+            }
+        }
+    }
+}
