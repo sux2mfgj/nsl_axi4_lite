@@ -4,37 +4,18 @@
 #define AXI_ADDR_WIDTH (32)
 #define AXI_DATA_WIDTH (32)
 
+#define AXI4_LITE_SLAVE_INTERFACES input awvalid; func_out awready; input awaddr[AXI_ADDR_WIDTH]; input awprot[3]; input wvalid; func_out wready; input wdata[AXI_DATA_WIDTH]; input wstrb[AXI_DATA_WIDTH / 8]; func_out bvalid; input bready; output bresp[2]; input arvalid; func_out arready; input araddr[AXI_ADDR_WIDTH]; input arprot[3]; func_out rvalid; input rready; output rdata[AXI_DATA_WIDTH]; output rresp[2];
+
+
 declare axi4_lite_slave
 {
-    //write address channel
-    //input awvalid;
-    input awvalid;
-    func_out awready;
-    input awaddr[AXI_ADDR_WIDTH];
-    input awprot[3];
+    AXI4_LITE_SLAVE_INTERFACES
 
-    // write data channel
-    input wvalid;
-    func_out wready;
-    input wdata[AXI_DATA_WIDTH];
-    input wstrb[AXI_DATA_WIDTH / 8];
+    output in_data[AXI_DATA_WIDTH];
+    input out_data[AXI_DATA_WIDTH];
 
-    // write response channel
-    func_out bvalid;
-    input bready;
-    output bresp[2];
-
-    // read address channel
-    input arvalid;
-    func_out arready;
-    input araddr[AXI_ADDR_WIDTH];
-    input arprot[3];
-
-    //read data channel
-    func_out rvalid;
-    input rready;
-    output rdata[AXI_DATA_WIDTH];
-    output rresp[2];
+    func_out receive_data(in_data);
+    func_out get_data(): out_data;
 }
 
 #endif
