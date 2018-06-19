@@ -1,0 +1,61 @@
+#include "led_axi4_slave.nh"
+
+module led_axi4
+{
+    axi4_lite_slave slave;
+    reg status[32] = 0xaaaa5555;
+
+    // for read access
+    slave.arvalid = arvalid;
+    slave.araddr = araddr;
+    slave.arprot = arprot;
+    rdata = slave.rdata;
+    rresp = slave.rresp;
+    slave.rready = rready;
+    //for write access
+    slave.awvalid = awvalid;
+    slave.awaddr = awaddr;
+    slave.awprot = awprot;
+    slave.wdata = wdata;
+    slave.wstrb = wstrb;
+    slave.wvalid = wvalid;
+    bresp = slave.bresp;
+    slave.bready = bready;
+
+    led = status[3:0];
+
+    func slave.bvalid
+    {
+        bvalid();
+    }
+
+    func slave.wready
+    {
+        wready();
+    }
+
+    func slave.awready
+    {
+        awready();
+    }
+
+    func slave.rvalid
+    {
+        rvalid();
+    }
+
+    func slave.arready
+    {
+        arready();
+    }
+
+    func slave.get_data
+    {
+        return status;
+    }
+
+    func slave.receive_data
+    {
+        status := slave.in_data;
+    }
+}

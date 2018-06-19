@@ -4,7 +4,7 @@ module axi4_lite_master
 {
     // difinition for read
     reg r_address[AXI_ADDR_WIDTH];
-    reg r_data[AXI_DATA_WIDTH];
+    //reg r_data[AXI_DATA_WIDTH];
     proc_name r_address_write(r_address), r_data_read();
 
     // definition for write
@@ -24,8 +24,8 @@ module axi4_lite_master
     {
         araddr = r_address;
         arprot = 0b000;
-        /* arvalid = 0b1; */
-        arvalid();
+        arvalid = 0b1;
+        /* arvalid(); */
 
         //TODO consider timeout
         if(arready)
@@ -40,8 +40,8 @@ module axi4_lite_master
         {
             if(rresp[1] == 0)
             {
-                /* rready = 0b1; */
-                rready();
+                rready = 0b1;
+                /* rready(); */
                 data_arrive(rdata);
                 finish();
             }
@@ -68,8 +68,8 @@ module axi4_lite_master
     {
         awaddr = w_address;
         awprot = 0b000;
-        /* awvalid = 0b1; */
-        awvalid();
+        awvalid = 0b1;
+        /* awvalid(); */
 
         if(awready)
         {
@@ -81,8 +81,8 @@ module axi4_lite_master
     {
         wdata = w_data;
         wstrb = 0b1111;
-        /* wvalid = 0b1; */
-        wvalid();
+        wvalid = 0b1;
+        /* wvalid(); */
         if(wready)
         {
             finish();
@@ -91,8 +91,8 @@ module axi4_lite_master
 
     proc w_get_response
     {
-        //bready = 0b1;
-        bready();
+        bready = 0b1;
+        /* bready(); */
         if(bvalid)
         {
             //TODO consider timeout

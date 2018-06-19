@@ -1,0 +1,12 @@
+#ifndef __INCLUDED_LED_AXI4_SLAVE_NH__
+#define __INCLUDED_LED_AXI4_SLAVE_NH__
+
+#include "nsl_axi4_lite/axi4_lite_slave.h"
+
+declare led_axi4
+{
+    AXI4_LITE_SLAVE_INTERFACES
+    output led[4];
+}
+
+#endif //__INCLUDED_LED_AXI4_SLAVE_NH__
