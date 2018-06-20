@@ -3,8 +3,8 @@
 module write_value_via_axi
 {
     axi4_lite_master master;
-    reg before[2] = 0;
-    reg sending = 0;
+
+    reg counter[10] = 0;
 
     // connection for axi master
     awvalid = master.awvalid;
@@ -27,25 +27,12 @@ module write_value_via_axi
     master.rdata = rdata;
     master.rresp = rresp;
 
-    before := sw;
-    if(!before[0] && sw[0] && !sending)
+    if(counter < 10'h100)
     {
-        master.write_value(0x40000000, 32'h6);
-        sending := 1'b1;
+        counter++;
     }
-    if(!before[1] && sw[1] && !sending)
+    if(counter == 10'h100)
     {
-        master.write_value(0x40000000, 32'h9);
-        sending := 1'b1;
-    }
-
-    func master.write_done
-    {
-        sending := 1'b0;
-    }
-
-    func master.write_error
-    {
-        sending := 1'b0;
+        master.write_value(0x40000000, {30'h2, sw});
     }
 }

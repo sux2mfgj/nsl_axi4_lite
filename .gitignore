@@ -1,1 +1,6 @@
 *.v
+NA/
+*.xml
+*/xgui/
+*.jou
+*.log
