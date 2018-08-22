@@ -13,7 +13,7 @@ module axi4_lite_slave
     reg aw_addr[AXI_ADDR_WIDTH], aw_prot[3], w_data[AXI_DATA_WIDTH], w_strb[4];
 
     // 'axi4 lite read' access from master
-    if(arvalid)
+    if(arvalid & !read_address & !read_data)
     {
         read_address();
     }
@@ -39,7 +39,7 @@ module axi4_lite_slave
     }
 
     // write access from master
-    if(awvalid)
+    if(awvalid & !write_address & !write_data & !send_response)
     {
         write_address();
     }
