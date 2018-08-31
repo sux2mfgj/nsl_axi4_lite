@@ -2,15 +2,18 @@
 
 module axi4_lite_slave
 {
-    // for read
-    proc_name read_address, read_data;
-
     reg r_address[AXI_ADDR_WIDTH];
+    // for read
+    proc_name read_address, read_data(r_address);
+
     reg r_prot[3];
 
+    reg aw_addr[AXI_ADDR_WIDTH], aw_prot[3], w_strb[4];
     // for write
-    proc_name write_address, write_data, send_response;
-    reg aw_addr[AXI_ADDR_WIDTH], aw_prot[3], w_data[AXI_DATA_WIDTH], w_strb[4];
+    proc_name write_address, write_data(aw_addr), send_response;
+
+    // you should define macros, AXI_REG_SIZE and AXI_REG_WIDTH.
+    mem w_data[AXI_REG_SIZE][AXI_ADDR_WIDTH];
 
     // 'axi4 lite read' access from master
     if(arvalid & !read_address & !read_data)
@@ -21,15 +24,15 @@ module axi4_lite_slave
     proc read_address
     {
         //TODO check address
-        r_address := araddr;
+        //r_address := araddr;
         r_prot := arprot;
         arready();
-        read_data();
+        read_data(araddr);
     }
 
     proc read_data
     {
-        rdata = get_data();
+        rdata = get_data(r_address[AXI_REG_WIDTH - 1:0]);
         rresp = 0b00;
         rvalid();
         if(rready)
@@ -47,18 +50,19 @@ module axi4_lite_slave
     proc write_address
     {
         //TODO
-        aw_addr := awaddr;
+        //aw_addr := awaddr;
         aw_prot := awprot;
         awready();
-        write_data();
+        write_data(awaddr);
     }
 
     proc write_data
     {
         // TODO
-        w_data := wdata;
+        //w_data := wdata;
+        w_data[aw_addr[AXI_REG_WIDTH - 1:0]] := wdata;
         w_strb := wstrb;
-        receive_data(wdata);
+        receive_data(aw_addr[AXI_REG_WIDTH - 1:0], wdata);
         // read data
         // read strb
         wready();
