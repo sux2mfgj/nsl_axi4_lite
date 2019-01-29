@@ -1,6 +1,6 @@
 #include "axi4_lite_slave.h"
 
-module axi4_lite_slave
+module axi4_lite_slave_%MODULE_POST%
 {
     reg r_address[AXI_ADDR_WIDTH];
     // for read
@@ -13,7 +13,7 @@ module axi4_lite_slave
     proc_name write_address, write_data(aw_addr), send_response;
 
     // you should define macros, AXI_REG_SIZE and AXI_REG_WIDTH.
-    mem w_data[AXI_REG_SIZE][AXI_ADDR_WIDTH];
+    /* mem w_data[AXI_REG_SIZE][AXI_ADDR_WIDTH]; */
 
     // 'axi4 lite read' access from master
     if(arvalid & !read_address & !read_data)
@@ -32,7 +32,7 @@ module axi4_lite_slave
 
     proc read_data
     {
-        rdata = get_data(r_address[AXI_REG_WIDTH - 1:0]);
+        rdata = get_data(r_address);
         rresp = 0b00;
         rvalid();
         if(rready)
@@ -60,9 +60,9 @@ module axi4_lite_slave
     {
         // TODO
         //w_data := wdata;
-        w_data[aw_addr[AXI_REG_WIDTH - 1:0]] := wdata;
+        /* w_data[aw_addr[AXI_REG_WIDTH - 1:0]] := wdata; */
         w_strb := wstrb;
-        receive_data(aw_addr[AXI_REG_WIDTH - 1:0], wdata);
+        receive_data(aw_addr, wdata);
         // read data
         // read strb
         wready();
